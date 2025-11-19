@@ -2,28 +2,22 @@ const app = require("./src/app");
 const connectDB = require("./src/config/db");
 const config = require("./src/config");
 
+
+// CORS configuration
+const cors = require("cors");
+// Allow requests only from the specified origin
+app.use(cors({
+  origin: 'https://seid-blog-app.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
 // Start the server after database connection
 async function start() {
   try {
     await connectDB();
   } catch (err) {
-    console.error("Database connection error:");
-    console.error(err.message || err);
-    console.error("\nTroubleshooting tips:");
-    console.error(
-      "- If using MongoDB Atlas, ensure your current IP is whitelisted (Network Access)"
-    );
-    console.error(
-      "- Confirm the URI includes the database name and correct credentials:"
-    );
-    console.error(
-      "  mongodb+srv://<user>:<pass>@cluster0.mongodb.net/<dbname>?retryWrites=true&w=majority"
-    );
-    console.error(
-      "- If you intended to use a local MongoDB, update MONGO_URI in .env to a local URI such as:"
-    );
-    console.error("  mongodb://localhost:27017/blog-api");
-    process.exit(1);
+    console.error("Failed to connect to the database", err);
   }
 
   const server = app.listen(config.port, () => {
